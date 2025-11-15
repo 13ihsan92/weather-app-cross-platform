@@ -10,19 +10,19 @@ export const weatherData:Ref<WeatherData> = ref({
 export async function getWeatherData() {
     try {
         weatherData.value.dataApi = await fetch(weatherData.value.urlApi);
-        const res:Response = weatherData.value.dataApi;
+        const res = weatherData.value.dataApi;
 
         if (!res.ok) {
             throw new Error("API Is Unreacheable");
         } else {
-            const resData:any = await res.json();
+            const resData = await res.json();
             // debugging
             //console.info(resData);
             
             // define const/var untuk parsing
-            const hourlyTime:string[] = resData.hourly.time;
-            const hourlyTemp:number[] = resData.hourly.temperature_2m;
-            const hourlyUnitTemp:string = resData.hourly_units.temperature_2m;
+            const hourlyTime = resData.hourly.time;
+            const hourlyTemp = resData.hourly.temperature_2m;
+            const hourlyUnitTemp = resData.hourly_units.temperature_2m;
 
             const mappedData:ParsedWeatherData[] = hourlyTime.map((timeString:string, index:number) => {
                 return {

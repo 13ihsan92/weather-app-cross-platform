@@ -11,3 +11,18 @@ export interface ParsedWeatherData {
     temp: number,
     unitTemp: string
 };
+
+export interface getWeatherData {
+    res: Response,
+    resData: any | R,
+    hourlyTime: string[],
+    hourlyTemp: number[],
+    hourlyUnitTemp: string,
+    mappedData: ParsedWeatherData[],
+};
+
+export interface WeatherDataPooler {
+    fetchApiData(urlApi: URL): Promise<void>;
+    parseApiData(): void;
+    getMappedApiData(): ParsedWeatherData[] | null;
+};
