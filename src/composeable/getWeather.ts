@@ -1,6 +1,6 @@
 import { WeatherData, resDataProp } from "@/managementState/initialState"; // import interface
 import { ParsedWeatherData } from "@/managementState/updateState";
-import { readonly, Ref, ref } from "vue";
+import { h, readonly, Ref, ref } from "vue";
 
 export const weatherData:Ref<WeatherData> = ref({
     urlApi: new URL('https://api.open-meteo.com/v1/forecast?latitude=-6.2&longitude=106.8&hourly=temperature_2m'),
@@ -39,14 +39,27 @@ export async function getWeatherData() {
                     unitTemp:hourlyUnitTemp
                 };
             });
-            weatherData.value.isUpdate.status = {
-                type: 'success',
-                mappedApiData: mappedData,
-                errorMessage: null
             }; // ngestore value ke state success
-            //debugging
-            //console.info(weatherData.value.mappedApiData);
+            // debugging
+            // console.info(weatherData.value.mappedApiData);
 
+            // proteksi data mapping error
+            };
+
+            try {
+                if (typeof hourlyTemp[0] == 'number' && typeof hourlyTime[0] == 'string') && hourlyUnitTemp.length > 0 {
+                    weatherData.value.isUpdate.status = {
+                        type: 'success',
+                        mappedApiData: mappedData,
+                        errorMessage: null
+            } catch (error) {
+                console.error("Data Mapping Error");
+                weatherData.value.isUpdate.status = {
+                    type: 'error',
+                    mappedApiData: null,
+                    errorMessage: 'Data Mapping Error Occured'
+                };
+            };
             // return readonly mapped data (proteksi data dari change diluar fungsi)
             return readonly(weatherData.value.isUpdate.status.mappedApiData);
         };
