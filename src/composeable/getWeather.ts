@@ -1,4 +1,4 @@
-import { WeatherData, ParsedWeatherData } from "@/interface/interface.vue"; //import interface
+import { WeatherData, ParsedWeatherData } from "@/interface/interface"; //import interface
 import { readonly, Ref, ref } from "vue";
 
 export const weatherData:Ref<WeatherData> = ref({
