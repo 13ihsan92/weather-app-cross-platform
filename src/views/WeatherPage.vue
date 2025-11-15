@@ -13,7 +13,10 @@
         </ion-toolbar>
       </ion-header>
 
-      <ion-card v-for="(item, index) in weatherData.mappedApiData" v-bind:key="index">
+      <ion-card 
+      v-for="(item, index) in weatherData.isUpdate.status.mappedApiData" 
+      v-bind:key="index"
+      v-if="weatherData.isUpdate.status.type === 'success'">
         <ion-card-header>
           <ion-card-title>
             {{ toTimeLocale(item.time) }}
@@ -42,11 +45,36 @@ import {
   IonCardSubtitle,
   IonCardTitle
 } from '@ionic/vue';
-import { onMounted } from 'vue';
+import { onMounted, onUnmounted, watch } from 'vue';
 import { toTimeLocale } from "@/composeable/toTimeLocale";
 
 onMounted(() => {
   getWeatherData();
+  const intervalId:NodeJS.Timeout = setInterval(() => {
+    getWeatherData();
+  }, 30000);
+  onUnmounted(() => {
+    clearInterval(intervalId);
+  });
+});
+
+watch(() => weatherData.value.isUpdate.status, (newStatus) => {
+  if (newStatus.type === 'success') {
+    // console.info('Weather data updated successfully.');
+    void 0;
+  } else if (newStatus.type === 'error') {
+    alert(`Error fetching weather data: ${newStatus.errorMessage}`);
+  } else if (newStatus.type === 'loading') {
+    console.info('Weather data still loading.'); 
+  } else {
+    console.error('Weather data status unknown.');
+  };
+});
+
+watch(() => weatherData.value.urlApi, (newUrl, oldUrl) => {
+  if (newUrl !== oldUrl) {
+    getWeatherData();
+  }
 });
 
 </script>

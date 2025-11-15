@@ -1,10 +1,17 @@
-import { WeatherData, ParsedWeatherData } from "@/interface/interface"; //import interface
+import { WeatherData, resDataProp } from "@/managementState/initialState"; // import interface
+import { ParsedWeatherData } from "@/managementState/updateState";
 import { readonly, Ref, ref } from "vue";
 
 export const weatherData:Ref<WeatherData> = ref({
     urlApi: new URL('https://api.open-meteo.com/v1/forecast?latitude=-6.2&longitude=106.8&hourly=temperature_2m'),
     dataApi: null,
-    mappedApiData: null 
+    isUpdate: { 
+        status: { 
+            type: 'idle',
+            mappedApiData: null, 
+            errorMessage: null
+        }
+    }
 });
 
 export async function getWeatherData() {
@@ -15,7 +22,7 @@ export async function getWeatherData() {
         if (!res.ok) {
             throw new Error("API Is Unreacheable");
         } else {
-            const resData = await res.json();
+            const resData:resDataProp = await res.json();
             // debugging
             //console.info(resData);
             
@@ -24,6 +31,7 @@ export async function getWeatherData() {
             const hourlyTemp = resData.hourly.temperature_2m;
             const hourlyUnitTemp = resData.hourly_units.temperature_2m;
 
+            // mapping data dengan double interface check dari parsedWeatherData dan resDataProp
             const mappedData:ParsedWeatherData[] = hourlyTime.map((timeString:string, index:number) => {
                 return {
                     time:timeString,
@@ -31,12 +39,25 @@ export async function getWeatherData() {
                     unitTemp:hourlyUnitTemp
                 };
             });
-            weatherData.value.mappedApiData = mappedData; //storing value
+            weatherData.value.isUpdate.status = {
+                type: 'success',
+                mappedApiData: mappedData,
+                errorMessage: null
+            }; // ngestore value ke state success
             //debugging
             //console.info(weatherData.value.mappedApiData);
-            return readonly(weatherData.value.mappedApiData);
+
+            // return readonly mapped data (proteksi data dari change diluar fungsi)
+            return readonly(weatherData.value.isUpdate.status.mappedApiData);
         };
+
     } catch (error) {
         console.error("Application Uknown Error");
+        alert(`Application Error: ${(error as Error).message}`);
+        weatherData.value.isUpdate.status = {
+            type: 'error',
+            mappedApiData: null,
+            errorMessage: (error as Error).message
+        };
     };
 };
