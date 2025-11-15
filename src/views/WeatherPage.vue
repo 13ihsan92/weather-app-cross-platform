@@ -14,10 +14,8 @@
       </ion-header>
 
       <ion-card 
-      v-for="(item, index) in weatherData.isUpdate.status.mappedApiData" 
-      v-bind:key="index"
-      v-if="weatherData.isUpdate.status.type === 'success'">
-        <ion-card-header>
+      v-for="(item, index) in weatherData.isUpdate.status.mappedApiData" v-bind:key="index">
+        <ion-card-header v-if="weatherData.isUpdate.status.type === 'success'">
           <ion-card-title>
             {{ toTimeLocale(item.time) }}
           </ion-card-title>
