@@ -19,6 +19,8 @@ export interface getWeatherData {
     hourlyTemp: number[],
     hourlyUnitTemp: string,
     mappedData: ParsedWeatherData[],
+    timeString: string,
+    index: number
 };
 
 export interface WeatherDataPooler {
